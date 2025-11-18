@@ -1,4 +1,4 @@
-# Castbox Popularity Sorter
+# Castbox Sorter
 
 <p align="center">
   <img src="icon.png" width="128" alt="Castbox Sorter Icon">
