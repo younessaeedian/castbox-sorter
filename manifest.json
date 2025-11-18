@@ -14,7 +14,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://castbox.fm/channel/*-id*"],
+      "matches": ["https://castbox.fm/*"],
       "js": ["content.js"],
       "css": ["style.css"]
     }

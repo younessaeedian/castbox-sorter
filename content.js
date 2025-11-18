@@ -26,10 +26,13 @@ const SORT_OPTIONS = {
  * Injects the custom dropdown and our custom list container
  */
 function injectControls() {
+  // --- FIX: Check URL to ensure we are on a channel page ---
+  if (!window.location.href.includes("-id")) return;
+
   const targetContainer = document.querySelector(INJECTION_POINT_SELECTOR);
   const alreadyExists = document.getElementById("sorter-container-wrapper");
 
-  // This function is now called repeatedly
+  // This function is now called repeatedly via MutationObserver
   // This condition ensures the injection only happens once
   if (targetContainer && !alreadyExists) {
     console.log("Container found. Injecting custom dropdown...");
