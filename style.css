@@ -1,0 +1,204 @@
+/* --- Section 1: Dropdown Styles (Full Simulation) --- */
+
+/* Main wrapper for LTR layout and font */
+.sorter-main-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 15px 0 10px 0;
+  direction: ltr; /* Ensure English layout */
+  /* Use Castbox's default font */
+  font-family: "Hind Siliguri", -apple-system, system-ui, Segoe UI, Roboto,
+    sans-serif;
+}
+
+/* Main component container (for position: relative) */
+.sorter-component-container {
+  position: relative;
+  width: 260px; /* Fixed width like 'Top Shows' */
+  font-family: inherit;
+}
+
+/* Main clickable box (simulating css-f7agmn-control) */
+.sorter-control {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ccc; /* Default border */
+  border-radius: 4px;
+  cursor: pointer;
+  height: 40px; /* Fixed height */
+  transition: border-color 0.2s ease;
+}
+
+/* --- 🔥 Change 1: Orange Hover --- */
+.sorter-control:hover {
+  border-color: #f55b23 !important; /* <-- Your requested orange color */
+}
+
+/* Selected value container (simulating css-1hwfws3) */
+.sorter-value-container {
+  flex: 1 1 0%;
+  padding: 0 15px; /* Text padding from left */
+  overflow: hidden;
+}
+
+/* Selected value text (simulating css-1uccc91-singleValue) */
+.sorter-value-text {
+  color: #333;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Fix text overlap bug */
+  white-space: nowrap;
+}
+
+/* Indicators container (separator and arrow) (simulating css-1wy0on6) */
+.sorter-indicators {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+}
+
+/* Vertical separator (simulating css-1okebmr-indicatorSeparator) */
+.sorter-separator {
+  align-self: stretch;
+  background-color: #ccc;
+  margin: 8px 0;
+  width: 1px;
+}
+
+/* --- 🔥 Change 3: Three-state Arrow Behavior --- */
+
+/* Arrow container (default state) */
+.sorter-arrow-container {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  color: #cccccc;
+  transition: color 0.2s ease;
+}
+
+/* Hover state (on the whole box) */
+.sorter-control:hover .sorter-arrow-container {
+  color: #999999;
+}
+/* Open state (menu is active) */
+.sorter-menu.is-open ~ .sorter-control .sorter-arrow-container {
+  color: #333333;
+  transform: rotate(180deg);
+}
+
+/* --- Dropdown Menu (simulating css-26l3qy-menu) --- */
+.sorter-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
+  z-index: 1000;
+  font-family: inherit;
+}
+.sorter-menu.is-open {
+  display: block;
+}
+
+/* Options list (simulating css-11unzgr) */
+.sorter-menu-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 4px;
+  overflow-x: hidden;
+}
+
+/* Each option (simulating css-knui5-option) */
+.sorter-option {
+  padding: 8px 12px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sorter-option:hover {
+  background-color: #f0f0f0;
+}
+/* --- 🔥 Change 2: Selected Option Orange --- */
+.sorter-option.is-selected {
+  background-color: #fdf5f2;
+  color: #f55b23;
+  font-weight: 500;
+}
+
+/* --- ✅ Correction: Status Container and Loader Styles --- */
+
+/* New container for status text and loader */
+#sorter-status-container {
+  display: flex;
+  flex-direction: column; /* Vertical layout */
+  justify-content: center; /* Vertical alignment */
+  align-items: flex-start; /* Left alignment */
+
+  /* Styles moved from #sorter-status */
+  padding-left: 10px;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, Segoe UI, Roboto, sans-serif;
+  direction: ltr;
+
+  /* Prevent page jump when loader appears */
+  min-height: 40px;
+}
+
+/* Status text (formerly #sorter-status) */
+#sorter-status-text {
+  font-size: 14px;
+  color: #f55b23; /* <-- Your requested orange color */
+  line-height: 1.2; /* Tighter line-height */
+}
+
+/* Loader container */
+#sorter-loader {
+  width: 32px; /* SVG size */
+  height: 32px; /* SVG size */
+  margin-top: 2px; /* Small margin from text above */
+}
+/* --- End of Correction --- */
+
+/* --- Section 2: Our Custom List Styles --- */
+
+.custom-stat-item {
+  /* We keep these for vertical alignment of icon and text */
+  display: inline-flex;
+  align-items: center;
+
+  /* We keep this for LTR layout of icon and number */
+  direction: ltr;
+
+  /* These are kept to match the Castbox font */
+  font-size: inherit;
+  color: inherit;
+  font-weight: inherit;
+  white-space: nowrap;
+}
+
+/*
+ * Override the size of our custom icons (which have the .heart class)
+ * to be exactly 12px and match the original icons (date/time).
+*/
+.custom-stat-item .heart {
+  height: 12px !important; /* Override 11px */
+  width: 12px !important; /* Ensure it's square */
+  margin-right: 4px; /* Keep margin from .heart class */
+
+  /* Fine-tune vertical alignment */
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+/* Hiding rule removed so our custom heart icon is displayed */
+
+/* Remove separator line (your request) */
+#custom-sorted-list-container .ep-item {
+  /* border-bottom: none !important; */
+}

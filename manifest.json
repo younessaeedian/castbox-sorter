@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Castbox Sorter",
+  "version": "2.5",
+  "description": "Sorts all episodes on a channel page by likes, plays, or comments using the Castbox API.",
+
+  "permissions": ["storage"],
+
+  "host_permissions": ["https://*.castbox.fm/*"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://castbox.fm/channel/*-id*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
+    }
+  ],
+
+  "action": {
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "128": "icon.png"
+  }
+}
