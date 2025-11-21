@@ -63,7 +63,7 @@ async function handleSortRequest(sortType) {
       if (response.status === "success") {
         fullChannelData = response.episodes;
         cachedChannelCid = currentCid;
-        statusLabel.innerText = "Building list...";
+        statusLabel.innerText = "Building list";
       } else {
         throw new Error(response.message);
       }
