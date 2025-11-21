@@ -1,3 +1,5 @@
+/* castbox-sorter/style.css */
+
 /* --- Section 1: Dropdown Styles (Full Simulation) --- */
 
 /* Main wrapper for LTR layout and font */
@@ -5,60 +7,64 @@
   display: flex;
   align-items: center;
   margin: 15px 0 10px 0;
-  direction: ltr; /* Ensure English layout */
-  /* Use Castbox's default font */
+  direction: ltr;
   font-family: "Hind Siliguri", -apple-system, system-ui, Segoe UI, Roboto,
     sans-serif;
 }
 
-/* Main component container (for position: relative) */
+/* Main component container */
 .sorter-component-container {
   position: relative;
-  width: 260px; /* Fixed width like 'Top Shows' */
+  width: 200px;
   font-family: inherit;
 }
 
-/* Main clickable box (simulating css-f7agmn-control) */
+/* Main clickable box */
 .sorter-control {
   display: flex;
   align-items: center;
   background-color: #fff;
-  border: 1px solid #ccc; /* Default border */
+  border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  height: 40px; /* Fixed height */
+  height: 40px;
   transition: border-color 0.2s ease;
 }
 
-/* --- 🔥 Change 1: Orange Hover --- */
+/* Orange Hover */
 .sorter-control:hover {
-  border-color: #f55b23 !important; /* <-- Your requested orange color */
+  border-color: #f55b23 !important;
 }
 
-/* Selected value container (simulating css-1hwfws3) */
+/* Active State (Orange Border) */
+.sorter-control.is-active {
+  border-color: #f55b23 !important;
+}
+
+/* Selected value container */
 .sorter-value-container {
   flex: 1 1 0%;
-  padding: 0 15px; /* Text padding from left */
+  padding: 0 15px;
   overflow: hidden;
 }
 
-/* Selected value text (simulating css-1uccc91-singleValue) */
+/* Selected value text */
 .sorter-value-text {
   color: #333;
   font-size: 15px;
   overflow: hidden;
-  text-overflow: ellipsis; /* Fix text overlap bug */
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Indicators container (separator and arrow) (simulating css-1wy0on6) */
+/* Indicators container */
 .sorter-indicators {
   display: flex;
   align-items: center;
   align-self: stretch;
 }
 
-/* Vertical separator (simulating css-1okebmr-indicatorSeparator) */
+/* Vertical separator */
 .sorter-separator {
   align-self: stretch;
   background-color: #ccc;
@@ -66,35 +72,35 @@
   width: 1px;
 }
 
-/* --- 🔥 Change 3: Three-state Arrow Behavior --- */
-
-/* Arrow container (default state) */
+/* Arrow container */
 .sorter-arrow-container {
   display: flex;
   align-items: center;
   padding: 0 8px;
   color: #cccccc;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-/* Hover state (on the whole box) */
+/* Hover state on control */
 .sorter-control:hover .sorter-arrow-container {
   color: #999999;
 }
-/* Open state (menu is active) */
-.sorter-menu.is-open ~ .sorter-control .sorter-arrow-container {
+
+/* Open state (Arrow Rotation) */
+.sorter-control.is-active .sorter-arrow-container {
   color: #333333;
   transform: rotate(180deg);
 }
 
-/* --- Dropdown Menu (simulating css-26l3qy-menu) --- */
+/* --- Dropdown Menu --- */
 .sorter-menu {
   display: none;
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 4px;
+  /* ✅ تغییر ۱: افزایش فاصله لیست با دراپ‌داون */
+  margin-top: 8px;
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
@@ -105,7 +111,7 @@
   display: block;
 }
 
-/* Options list (simulating css-11unzgr) */
+/* Options list */
 .sorter-menu-list {
   max-height: 300px;
   overflow-y: auto;
@@ -113,92 +119,73 @@
   overflow-x: hidden;
 }
 
-/* Each option (simulating css-knui5-option) */
+/* Each option */
 .sorter-option {
   padding: 8px 12px;
   font-size: 15px;
   color: #333;
   cursor: pointer;
   white-space: nowrap;
+  transition: background-color 0.1s ease;
 }
+
+/* ✅ تغییر ۲: هاور شدن آیتم‌ها (نارنجی توپر با متن سفید) */
 .sorter-option:hover {
-  background-color: #f0f0f0;
+  background-color: #f55b23;
+  color: #fff;
 }
-/* --- 🔥 Change 2: Selected Option Orange --- */
+
+/* ✅ تغییر ۳: آیتم انتخاب شده (خاکستری) */
 .sorter-option.is-selected {
-  background-color: #fdf5f2;
-  color: #f55b23;
+  background-color: #f2f2f2;
+  color: #565a5f;
   font-weight: 500;
 }
 
-/* --- ✅ Correction: Status Container and Loader Styles --- */
-
-/* New container for status text and loader */
+/* --- Status Container and Loader --- */
 #sorter-status-container {
   display: flex;
-  flex-direction: column; /* Vertical layout */
-  justify-content: center; /* Vertical alignment */
-  align-items: flex-start; /* Left alignment */
-
-  /* Styles moved from #sorter-status */
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   padding-left: 10px;
   flex-shrink: 0;
   font-family: -apple-system, system-ui, Segoe UI, Roboto, sans-serif;
   direction: ltr;
-
-  /* Prevent page jump when loader appears */
   min-height: 40px;
 }
 
-/* Status text (formerly #sorter-status) */
 #sorter-status-text {
   font-size: 14px;
-  color: #f55b23; /* <-- Your requested orange color */
-  line-height: 1.2; /* Tighter line-height */
+  color: #f55b23;
+  line-height: 1.2;
 }
 
-/* Loader container */
 #sorter-loader {
-  width: 32px; /* SVG size */
-  height: 32px; /* SVG size */
-  margin-top: 2px; /* Small margin from text above */
+  width: 32px;
+  height: 32px;
+  margin-top: 2px;
 }
-/* --- End of Correction --- */
 
-/* --- Section 2: Our Custom List Styles --- */
-
+/* --- Section 2: Custom List Styles --- */
 .custom-stat-item {
-  /* We keep these for vertical alignment of icon and text */
   display: inline-flex;
   align-items: center;
-
-  /* We keep this for LTR layout of icon and number */
   direction: ltr;
-
-  /* These are kept to match the Castbox font */
   font-size: inherit;
   color: inherit;
   font-weight: inherit;
   white-space: nowrap;
 }
 
-/*
- * Override the size of our custom icons (which have the .heart class)
- * to be exactly 12px and match the original icons (date/time).
-*/
 .custom-stat-item .heart {
-  height: 12px !important; /* Override 11px */
-  width: 12px !important; /* Ensure it's square */
-  margin-right: 4px; /* Keep margin from .heart class */
-
-  /* Fine-tune vertical alignment */
+  height: 12px !important;
+  width: 12px !important;
+  margin-right: 4px;
   vertical-align: middle;
   margin-top: -1px;
 }
 
-/* Hiding rule removed so our custom heart icon is displayed */
-
-/* Remove separator line (your request) */
 #custom-sorted-list-container .ep-item {
   /* border-bottom: none !important; */
 }

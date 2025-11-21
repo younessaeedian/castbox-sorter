@@ -15,7 +15,7 @@
   "content_scripts": [
     {
       "matches": ["https://castbox.fm/*"],
-      "js": ["content.js"],
+      "js": ["ui-renderer.js", "api-logic.js", "main.js"],
       "css": ["style.css"]
     }
   ],
