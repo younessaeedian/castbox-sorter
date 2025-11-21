@@ -166,7 +166,7 @@
   width: 24px; /* ✅ کوچک‌تر شدن سایز لودر */
   height: 24px;
   margin-top: 0;
-  margin-left: 8px; /* ✅ فاصله از متن */
+  margin-left: 4px; /* ✅ فاصله از متن */
   display: flex;
   align-items: center;
 }
