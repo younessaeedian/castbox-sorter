@@ -142,30 +142,35 @@
   font-weight: 500;
 }
 
-/* --- Status Container and Loader --- */
+/* --- ✅ اصلاح شده: Status Container و Loader (فقط این بخش تغییر کرد) --- */
 #sorter-status-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: row; /* ✅ تغییر به افقی */
+  align-items: center; /* ✅ وسط‌چین عمودی */
   padding-left: 10px;
   flex-shrink: 0;
   font-family: -apple-system, system-ui, Segoe UI, Roboto, sans-serif;
   direction: ltr;
-  min-height: 40px;
+  height: 40px; /* ✅ ارتفاع فیکس برابر با منو */
 }
 
 #sorter-status-text {
-  font-size: 14px;
+  font-size: 13px; /* کمی کوچک‌تر برای زیبایی */
   color: #f55b23;
   line-height: 1.2;
+  white-space: nowrap; /* جلوگیری از شکستن متن */
+  margin-top: 2px; /* اصلاح تراز چشمی */
 }
 
 #sorter-loader {
-  width: 32px;
-  height: 32px;
-  margin-top: 2px;
+  width: 24px; /* ✅ کوچک‌تر شدن سایز لودر */
+  height: 24px;
+  margin-top: 0;
+  margin-left: 8px; /* ✅ فاصله از متن */
+  display: flex;
+  align-items: center;
 }
+/* --- پایان اصلاح لودینگ --- */
 
 /* --- Section 2: Custom List Styles --- */
 .custom-stat-item {

@@ -51,7 +51,7 @@ async function handleSortRequest(sortType) {
       alert("Channel ID not found.");
       return;
     }
-    statusLabel.innerText = "Fetching all episodes...";
+    statusLabel.innerText = "Fetching all episodes";
     loader.style.display = "block";
     isFetching = true;
 
