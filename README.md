@@ -1,7 +1,7 @@
 # Castbox Sorter
 
 <p align="center">
-  <img src="icon.png" width="128" alt="Castbox Sorter Icon">
+  <img src="icons/icon-128.png" width="128" alt="Castbox Sorter Icon">
 </p>
 
 A simple Chrome Extension that adds powerful sorting options (by likes, plays, comments) to Castbox.fm channel pages.
