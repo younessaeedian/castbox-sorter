@@ -1,81 +1,100 @@
 // --- Section 1: API Functions ---
 
-async function get_all_episode_ids(cid) {
-  // API Step 1: Get the full list of EIDs
-  const url = `https://everest.castbox.fm/data/episodes/overview?_t=176333&cids=${cid}&compare_eid=1&country=us&eids=&raw=1`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok)
-      throw new Error(`API Error (EIDs): ${response.statusText}`);
+const API_BASE = "https://everest.castbox.fm/data";
+const REQUEST_TIMEOUT_MS = 15000;
+const CHUNK_SIZE = 20;
+const CHUNK_DELAY_MS = 200; // A short delay between chunks to respect the server
 
-    const data = await response.json();
-    if (!data.data || !data.data[0] || !data.data[0].episode_list) {
-      throw new Error("Unexpected EID response structure");
+/**
+ * Fetches a URL and parses JSON, with a timeout and one retry.
+ */
+async function fetch_json(url, retries = 1) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
+      if (!response.ok)
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      return await response.json();
+    } catch (error) {
+      if (attempt >= retries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-    return data.data[0].episode_list.map((ep) => ep.eid); // Return the list [eid1, eid2, ...]
-  } catch (error) {
-    console.error("Error in get_all_episode_ids:", error);
-    return null;
   }
 }
 
-async function get_episode_details(eids_list) {
-  // API Step 2: Get details in chunks of 20
-  const all_episodes_details = [];
-  const chunk_size = 20;
+async function get_episode_overview(cid) {
+  // API Step 1: Get all EIDs in Castbox's default order (+ release dates)
+  const url = `${API_BASE}/episodes/overview?_t=${Date.now()}&cids=${encodeURIComponent(
+    cid
+  )}&compare_eid=1&country=us&eids=&raw=1`;
 
-  for (let i = 0; i < eids_list.length; i += chunk_size) {
-    const chunk = eids_list.slice(i, i + chunk_size);
-    const eids_string = chunk.join(",");
-    const url = `https://everest.castbox.fm/data/episodes/v2?country=us&eids=${eids_string}&raw=1`;
+  const data = await fetch_json(url);
+  const episode_list = data && data.data && data.data[0] && data.data[0].episode_list;
+  if (!Array.isArray(episode_list)) {
+    throw new Error("Unexpected EID response structure");
+  }
+  return episode_list
+    .filter((ep) => ep.eid != null)
+    .map((ep) => ({ eid: ep.eid, release_date: ep.release_date || null }));
+}
+
+async function get_episode_stats(eids_list) {
+  // API Step 2: Get likes / plays / comments in chunks
+  const stats = []; // [eid, likes, plays, comments]
+  let failed_count = 0;
+
+  for (let i = 0; i < eids_list.length; i += CHUNK_SIZE) {
+    const chunk = eids_list.slice(i, i + CHUNK_SIZE);
+    const eids_string = chunk.map((eid) => encodeURIComponent(eid)).join(",");
+    const url = `${API_BASE}/episodes/v2?country=us&eids=${eids_string}&raw=1`;
 
     try {
-      const response = await fetch(url);
-      if (!response.ok)
-        throw new Error(`API Error (Details): ${response.statusText}`);
-
-      const data = await response.json();
-      if (data.data) {
-        all_episodes_details.push(...data.data);
-      }
-      // A short delay to respect the server
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      const data = await fetch_json(url);
+      if (!Array.isArray(data && data.data)) throw new Error("Unexpected response");
+      data.data.forEach((ep) => {
+        stats.push([ep.eid, ep.like_count || 0, ep.play_count || 0, ep.comment_count || 0]);
+      });
+      failed_count += Math.max(0, chunk.length - data.data.length);
     } catch (error) {
-      console.error("Error in get_episode_details (chunk):", error);
+      console.error("Error in get_episode_stats (chunk):", error);
+      failed_count += chunk.length;
+    }
+
+    if (i + CHUNK_SIZE < eids_list.length) {
+      await new Promise((resolve) => setTimeout(resolve, CHUNK_DELAY_MS));
     }
   }
-  return all_episodes_details; // Return the full list of details
+  return { stats, failed_count };
 }
 
 // --- Section 2: Message Listener ---
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // We make sure we have received the correct message
-  if (request.type === "GET_SORTED_EPISODES") {
-    console.log("Message received from content.js. Fetching EIDs...");
+  if (request.type !== "GET_CHANNEL_DATA") return;
 
-    (async () => {
-      // Step 1: Get EIDs
-      const eids = await get_all_episode_ids(request.cid);
-      if (!eids) {
-        sendResponse({ status: "error", message: "Error fetching EIDs" });
+  (async () => {
+    try {
+      const overview = await get_episode_overview(request.cid);
+      if (!request.withStats) {
+        sendResponse({ status: "success", overview });
         return;
       }
-      console.log(`Received list of ${eids.length} EIDs. Fetching details...`);
 
-      // Step 2: Get details
-      const details_list = await get_episode_details(eids);
-      if (!details_list) {
-        sendResponse({ status: "error", message: "Error fetching details" });
-        return;
+      const eids = overview.map((ep) => ep.eid);
+      const { stats, failed_count } = await get_episode_stats(eids);
+      if (eids.length > 0 && stats.length === 0) {
+        throw new Error("Could not fetch episode details");
       }
-      console.log("Full details received.");
+      console.log(`Received stats for ${stats.length}/${eids.length} episodes.`);
+      sendResponse({ status: "success", overview, stats, failed_count });
+    } catch (error) {
+      console.error("Error fetching channel data:", error);
+      sendResponse({ status: "error", message: error.message || String(error) });
+    }
+  })();
 
-      // Sending the complete (still unsorted) result to content.js
-      sendResponse({ status: "success", episodes: details_list });
-    })();
-
-    // This line is important because it tells Chrome we will respond later (as our work is Asynchronous)
-    return true;
-  }
+  // Tells Chrome we will respond asynchronously
+  return true;
 });

@@ -1,195 +1,206 @@
-/* castbox-sorter/style.css */
+/* Castbox Sorter styles.
+ * The sort control replaces Castbox's "Reverse" button in the list header.
+ * It is a copy of Castbox's own dropdown (react-select on /categories),
+ * measured from the live site: 38px box, 1px #ccc border, 4px radius,
+ * orange (#f55b23) border on hover / open, separator + chevron on the right. */
 
-/* --- Section 1: Dropdown Styles (Full Simulation) --- */
-
-/* Main wrapper for LTR layout and font */
-.sorter-main-wrapper {
-  display: flex;
-  align-items: center;
-  margin: 15px 0 10px 0;
-  direction: ltr;
-  font-family: "Hind Siliguri", -apple-system, system-ui, Segoe UI, Roboto,
-    sans-serif;
-}
-
-/* Main component container */
-.sorter-component-container {
-  position: relative;
-  width: 200px;
-  font-family: inherit;
-}
-
-/* Main clickable box */
-.sorter-control {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  height: 40px;
-  transition: border-color 0.2s ease;
-}
-
-/* Orange Hover */
-.sorter-control:hover {
-  border-color: #f55b23 !important;
-}
-
-/* Active State (Orange Border) */
-.sorter-control.is-active {
-  border-color: #f55b23 !important;
-}
-
-/* Selected value container */
-.sorter-value-container {
-  flex: 1 1 0%;
-  padding: 0 15px;
-  overflow: hidden;
-}
-
-/* Selected value text */
-.sorter-value-text {
-  color: #333;
-  font-size: 15px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Indicators container */
-.sorter-indicators {
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-}
-
-/* Vertical separator */
-.sorter-separator {
-  align-self: stretch;
-  background-color: #ccc;
-  margin: 8px 0;
-  width: 1px;
-}
-
-/* Arrow container */
-.sorter-arrow-container {
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  color: #cccccc;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-/* Hover state on control */
-.sorter-control:hover .sorter-arrow-container {
-  color: #999999;
-}
-
-/* Open state (Arrow Rotation) */
-.sorter-control.is-active .sorter-arrow-container {
-  color: #333333;
-  transform: rotate(180deg);
-}
-
-/* --- Dropdown Menu --- */
-.sorter-menu {
+/* "Reverse" is replaced by the Newest / Oldest options */
+#trackList .trackListCon .funcBtn.cbs-has-sort > .funcBtn-item:not(.cbs-sort) {
   display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  /* ✅ تغییر ۱: افزایش فاصله لیست با دراپ‌داون */
-  margin-top: 8px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1);
-  z-index: 1000;
-  font-family: inherit;
-}
-.sorter-menu.is-open {
-  display: block;
 }
 
-/* Options list */
-.sorter-menu-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border-radius: 4px;
-  overflow-x: hidden;
-}
-
-/* Each option */
-.sorter-option {
-  padding: 8px 12px;
-  font-size: 15px;
-  color: #333;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-/* ✅ تغییر ۲: هاور شدن آیتم‌ها (نارنجی توپر با متن سفید) */
-.sorter-option:hover {
-  background-color: #f55b23;
-  color: #fff;
-}
-
-/* ✅ تغییر ۳: آیتم انتخاب شده (خاکستری) */
-.sorter-option.is-selected {
-  background-color: #f2f2f2;
-  color: #565a5f;
-  font-weight: 500;
-}
-
-/* --- ✅ اصلاح شده: Status Container و Loader (فقط این بخش تغییر کرد) --- */
-#sorter-status-container {
-  display: flex;
-  flex-direction: row; /* ✅ تغییر به افقی */
-  align-items: center; /* ✅ وسط‌چین عمودی */
-  padding-left: 10px;
-  flex-shrink: 0;
-  font-family: -apple-system, system-ui, Segoe UI, Roboto, sans-serif;
-  direction: ltr;
-  height: 40px; /* ✅ ارتفاع فیکس برابر با منو */
-}
-
-#sorter-status-text {
-  font-size: 13px; /* کمی کوچک‌تر برای زیبایی */
-  color: #f55b23;
-  line-height: 1.2;
-  white-space: nowrap; /* جلوگیری از شکستن متن */
-  margin-top: 2px; /* اصلاح تراز چشمی */
-}
-
-#sorter-loader {
-  width: 24px; /* ✅ کوچک‌تر شدن سایز لودر */
-  height: 24px;
-  margin-top: 0;
-  margin-left: 4px; /* ✅ فاصله از متن */
-  display: flex;
-  align-items: center;
-}
-/* --- پایان اصلاح لودینگ --- */
-
-/* --- Section 2: Custom List Styles --- */
-.custom-stat-item {
+/* The header row is 50px tall (title 20px + 30px margin), so the 38px box fits
+ * without moving the list. "top" centers it on the "N Episodes" title (the box
+ * sits on the text baseline of Castbox's float, so margins don't move it). */
+.cbs-sort {
+  position: relative;
+  top: -9px;
   display: inline-flex;
   align-items: center;
   direction: ltr;
-  font-size: inherit;
-  color: inherit;
-  font-weight: inherit;
+  cursor: default;
+  font-family: inherit;
+}
+
+/* --- Control box --- */
+.cbs-sort-toggle {
+  display: flex;
+  align-items: center;
+  width: 210px;
+  height: 38px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: default;
+  outline: none;
+  transition: border-color 0.1s ease;
+}
+.cbs-sort-toggle:hover,
+.cbs-sort-toggle:focus-visible,
+.cbs-sort.is-open .cbs-sort-toggle {
+  border-color: #f55b23;
+}
+
+.cbs-sort-value-container {
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 2px 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 400;
+}
+.cbs-sort-prefix {
+  margin-left: 2px;
+  color: #999;
+}
+.cbs-sort-value {
+  margin-left: 4px;
+  color: #333;
+}
+
+.cbs-sort-indicators {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+.cbs-sort-separator {
+  align-self: stretch;
+  width: 1px;
+  margin: 8px 0;
+  background-color: #ccc;
+}
+.cbs-sort-arrow {
+  display: flex;
+  padding: 8px;
+  color: #ccc;
+  transition: color 0.15s ease;
+}
+.cbs-sort-arrow svg {
+  display: block;
+}
+.cbs-sort-toggle:hover .cbs-sort-arrow {
+  color: #999;
+}
+.cbs-sort.is-open .cbs-sort-arrow {
+  color: #666;
+}
+
+/* --- Status (errors) next to the box --- */
+.cbs-sort-status {
+  margin-right: 12px;
+  font-size: 14px;
+  color: #999;
   white-space: nowrap;
 }
-
-.custom-stat-item .heart {
-  height: 12px !important;
-  width: 12px !important;
-  margin-right: 4px;
-  vertical-align: middle;
-  margin-top: -1px;
+.cbs-sort-status.is-error {
+  color: #f55b23;
 }
 
-#custom-sorted-list-container .ep-item {
-  /* border-bottom: none !important; */
+/* --- Loading: Castbox's own loader (LoadInline) takes the place of the list,
+ * exactly like Castbox shows while it loads a list --- */
+#trackList .trackListCon > .cbs-load-inline {
+  display: none;
+}
+#trackList .trackListCon.cbs-loading > .cbs-load-inline {
+  display: block;
+}
+#trackList .trackListCon.cbs-loading > #trackListCon_list,
+#trackList .trackListCon.cbs-loading + div /* "See More" */ {
+  display: none;
+}
+
+/* --- Menu (same look as Castbox's own dropdown, e.g. /categories: react-select) --- */
+.cbs-sort-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  width: 210px; /* Same width as the control box */
+  padding: 4px 0;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 11px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  cursor: default;
+}
+.cbs-sort.is-open .cbs-sort-menu {
+  display: block;
+}
+
+.cbs-sort-option {
+  margin: 0;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: rgb(86, 90, 95);
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+}
+.cbs-sort-option.is-selected {
+  background: #f2f2f2;
+}
+.cbs-sort-option:hover,
+.cbs-sort-option:focus {
+  background: #f55b23;
+  color: #fff;
+}
+
+/* --- Two-line info on Castbox's own rows (channel page list only) ---
+ *   line 1, episode info:  date · duration · "Played x%"
+ *   line 2, popularity:    likes · plays · comments
+ * Castbox renders likes in line 1; it is moved with CSS "order" only (no DOM
+ * changes to React's nodes). page.js adds plays, comments and a zero-height
+ * ".cbs-break" that forces the line break.
+ *
+ * Castbox rows are a fixed 100px (room for one info line), so the row grows:
+ * title 22 + 8 + line 18 + 4 + line 18 + 14 + buttons 30 = 114px.
+ * Spacing is tight inside a group and wider between groups. */
+#trackList #trackListCon_list .episodeRow .ep-item {
+  height: auto;
+  min-height: 100px;
+}
+#trackList #trackListCon_list .episodeRow .ep-item-con-des {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 2px; /* Applied twice (around the zero-height break line): 4px between lines */
+  margin-top: 8px;
+}
+#trackList #trackListCon_list .episodeRow .ep-item-con-btns {
+  margin-top: 14px;
+}
+
+/* Line 1 */
+#trackList #trackListCon_list .ep-item-con-des > * {
+  order: 1;
+}
+/* Line break */
+#trackList #trackListCon_list .ep-item-con-des > .cbs-break {
+  order: 2;
+  flex-basis: 100%;
+  height: 0;
+  margin: 0;
+}
+/* Line 2: likes (Castbox's own plain ".item"), plays, comments */
+#trackList #trackListCon_list .ep-item-con-des > .item:not(.icon):not(.played),
+#trackList #trackListCon_list .ep-item-con-des > .cbs-stat {
+  order: 3;
+}
+/* Castbox renders an empty likes item when an episode has no likes */
+#trackList #trackListCon_list .ep-item-con-des > .item:empty {
+  display: none;
+}
+
+#trackList #trackListCon_list .ep-item-con-des .item.icon.cbs-plays {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBvcGFjaXR5PSIwLjciPjxwYXRoIGQ9Ik0zIDIxLjI0MjFWMi43NTc5MUMyLjk5OTkxIDIuNDQ4NjkgMy4wNzk5MSAyLjE0NDkyIDMuMjMxOTEgMS44NzcyN0MzLjM4MzkxIDEuNjA5NjIgMy42MDI1NCAxLjM4NzU4IDMuODY1NzIgMS4yMzM1NUM0LjEyODkgMS4wNzk1MiA0LjQyNzMyIDAuOTk4OTYgNC43MzA4MyAxLjAwMDAxQzUuMDM0MzUgMS4wMDEwNiA1LjMzMjIxIDEuMDgzNjggNS41OTQzNiAxLjIzOTUzTDIxLjE0NSAxMC40ODM0QzIxLjQwNTIgMTAuNjM4MiAyMS42MjExIDEwLjg1OTggMjEuNzcxMSAxMS4xMjZDMjEuOTIxMSAxMS4zOTIzIDIyIDExLjY5MzkgMjIgMTIuMDAwOUMyMiAxMi4zMDc5IDIxLjkyMTEgMTIuNjA5NSAyMS43NzExIDEyLjg3NTdDMjEuNjIxMSAxMy4xNDIgMjEuNDA1MiAxMy4zNjM2IDIxLjE0NSAxMy41MTg0TDUuNTk0MzYgMjIuNzYwNUM1LjMzMjIxIDIyLjkxNjMgNS4wMzQzNSAyMi45OTg5IDQuNzMwODMgMjNDNC40MjczMiAyMy4wMDEgNC4xMjg5IDIyLjkyMDUgMy44NjU3MiAyMi43NjY1QzMuNjAyNTQgMjIuNjEyNCAzLjM4MzkxIDIyLjM5MDQgMy4yMzE5MSAyMi4xMjI3QzMuMDc5OTEgMjEuODU1MSAyLjk5OTkxIDIxLjU1MTMgMyAyMS4yNDIxWiIgc3Ryb2tlPSIjOUI5QjlCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvZz48L3N2Zz4=);
+}
+#trackList #trackListCon_list .ep-item-con-des .item.icon.cbs-comments {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBvcGFjaXR5PSIwLjciPjxwYXRoIGQ9Ik0xMiAyM0MxNC4xNzU2IDIzIDE2LjMwMjMgMjIuMzU0OSAxOC4xMTEzIDIxLjE0NjJDMTkuOTIwMiAxOS45Mzc1IDIxLjMzMDEgMTguMjE5NSAyMi4xNjI3IDE2LjIwOTVDMjIuOTk1MiAxNC4xOTk1IDIzLjIxMzEgMTEuOTg3OCAyMi43ODg2IDkuODU0MDFDMjIuMzY0MiA3LjcyMDIyIDIxLjMxNjUgNS43NjAyMSAxOS43NzgyIDQuMjIxODNDMTguMjM5OCAyLjY4MzQ1IDE2LjI3OTggMS42MzU4IDE0LjE0NiAxLjIxMTM3QzEyLjAxMjIgMC43ODY5MyA5LjgwMDQ3IDEuMDA0NzcgNy43OTA0OCAxLjgzNzMzQzUuNzgwNDkgMi42Njk4OSA0LjA2MjUzIDQuMDc5NzkgMi44NTM4MyA1Ljg4ODczQzEuNjQ1MTQgNy42OTc2NyAxIDkuODI0NDEgMSAxMkMxIDEzLjgxODcgMS40NCAxNS41MzM0IDIuMjIyMjIgMTcuMDQ0MUwxIDIzTDYuOTU1ODkgMjEuNzc3OEM4LjQ2NjU1IDIyLjU2IDEwLjE4MjYgMjMgMTIgMjNaIiBzdHJva2U9IiM5QjlCOUIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==);
 }

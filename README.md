@@ -14,20 +14,27 @@ By default, Castbox.fm channel pages **only** sort episodes by "Newest". If a po
 
 ### ✨ The Solution
 
-This extension enhances the Castbox website by injecting a new dropdown menu directly into the channel page. This allows you to instantly re-sort the *entire* episode list (not just the ones on the page) based on:
+This extension adds a **Sort** dropdown to the episode list of any Castbox.fm channel page (in place of the "Reverse" button). It re-sorts the *entire* episode list (not just the ones on the page) by:
 
-* **Most Likes**
-* **Most Plays**
-* **Most Comments**
-* **Oldest** (to listen from the beginning)
+* **Default** (the channel's own order)
+* **Newest** / **Oldest**
+* **Most Liked**
+* **Most Played**
+* **Most Commented**
+
+The sorted list is rendered by Castbox itself, so everything works exactly as on the original page: playing episodes, the like button, "add to playlist", the ⋮ menu and infinite scroll. Each episode also shows its play and comment counts next to the likes.
 
 This helps you quickly discover the "hidden gems" and best episodes of any podcast you follow.
 
 ### 📸 Screenshots
 
-| Before (Default Castbox) | After (With Sorter) |
+| Before (Default Castbox) | After (Sorted by Most Played) |
 | :---: | :---: |
-| <img width="616" alt="before" src="https://github.com/user-attachments/assets/6784185b-b203-44dc-9256-b74a54275a92" /> | <img width="616" alt="after" src="https://github.com/user-attachments/assets/a8e13865-07f5-4adc-bdd3-fd3ba1675fa8" /> |
+| <img width="616" alt="Castbox channel page without the extension" src="screenshots/before.png" /> | <img width="616" alt="Castbox channel page sorted by Most Played" src="screenshots/after.png" /> |
+
+<p align="center">
+  <img width="616" alt="The Sort dropdown" src="screenshots/menu.png" />
+</p>
 
 ### 🚀 How to Install (Manually)
 
@@ -37,6 +44,8 @@ Since this extension is not yet on the Chrome Web Store, you can easily install 
     * Click the green **`< > Code`** button at the top of this GitHub page.
     * Select **Download ZIP**.
     * Unzip the downloaded file (you will get a folder named `castbox-sorter-main` or similar).
+
+    > Requires Google Chrome 111 or newer.
 
 2.  **Open Chrome Extensions:**
     * Open your Google Chrome browser.
@@ -49,15 +58,18 @@ Since this extension is not yet on the Chrome Web Store, you can easily install 
     * Click the **Load unpacked** button that just appeared.
     * A file dialog will open. Select the **entire folder** you unzipped in Step 1 (the one that contains `manifest.json`).
 
-That's it! The extension is now active. Go to any Castbox.fm channel page, and you will see the new sorting dropdown.
+That's it! The extension is now active. Go to any Castbox.fm channel page, and you will see the new **Sort** dropdown above the episode list.
+
+**Updating:** download the new version, replace the old folder, then click the reload (↻) button on the extension's card in `chrome://extensions` and refresh the Castbox page.
 
 ### 🔒 Privacy Policy
 
 This extension is 100% safe and respects your privacy.
 
 * It does **not** collect, store, or transmit any personal data.
+* It does **not** read your Castbox login or account data.
 * It does **not** track your browsing activity.
-* All data fetching and sorting happens locally in your browser.
+* It only reads public episode data (likes, plays, comments, dates) from Castbox's public API. Sorting happens locally in your browser.
 
 ### 📜 License
 
