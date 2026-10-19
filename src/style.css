@@ -108,6 +108,15 @@
 #trackList .trackListCon.cbs-loading > .cbs-load-inline {
   display: block;
 }
+/* Progress text under the dots: same color and size as the episode info line */
+.cbs-load-text {
+  min-height: 18px;
+  margin-top: -14px; /* The 64px loader image has ~24px of empty space below the dots */
+  font-size: 14px;
+  line-height: 18px;
+  color: #777;
+  font-variant-numeric: tabular-nums; /* Numbers don't jitter while counting */
+}
 #trackList .trackListCon.cbs-loading > #trackListCon_list,
 #trackList .trackListCon.cbs-loading + div /* "See More" */ {
   display: none;

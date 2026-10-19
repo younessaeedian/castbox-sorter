@@ -20,6 +20,7 @@ const BRIDGE_TIMEOUT_MS = 5000;
 const APPLY_TIMEOUT_MS = 30000; // applyOrder waits for Castbox to load the first page
 const FUNC_BTN_SELECTOR = "#trackList .trackListCon .funcBtn";
 const TRACK_LIST_SELECTOR = "#trackList .trackListCon";
+const LOADER_TEXT_DELAY_MS = 400; // Fast sorts finish before the text appears (no flash)
 
 // Castbox's own list loader (component "LoadInline", page.castbox.main.*.js module 536):
 // three gray dots, animated SVG shown as an <img>
@@ -37,6 +38,8 @@ let lastSeenCid; // Used to detect SPA navigation between channels
 let ui = null; // { root, toggle, value, status, options }
 let statusClearTimer = null;
 let isListLoading = false;
+// Loader text under Castbox's dots, e.g. "Loading episodes… 120 / 385"
+const loaderText = { cid: null, withStats: false, text: "", visible: false, timer: null };
 
 /**
  * Extracts the channel CID from the URL.
@@ -243,10 +246,29 @@ function updateStatusUi() {
 
 /**
  * Shows Castbox's own loader in place of the list while a sort is applied,
- * exactly like Castbox does while it loads a list.
+ * exactly like Castbox does while it loads a list. Below the dots, a short
+ * progress text appears only if loading takes longer than LOADER_TEXT_DELAY_MS
+ * (large channels need several seconds to load all episode stats).
  */
-function setListLoading(isLoading) {
+function setListLoading(isLoading, { cid = null, withStats = false } = {}) {
   isListLoading = isLoading;
+  clearTimeout(loaderText.timer);
+  Object.assign(loaderText, { cid, withStats, text: "Loading episodes…", visible: false });
+  if (isLoading) {
+    loaderText.timer = setTimeout(() => {
+      loaderText.visible = true;
+      updateListLoadingUi();
+    }, LOADER_TEXT_DELAY_MS);
+  }
+  updateListLoadingUi();
+}
+
+/**
+ * Stats are loaded in groups of 20; background.js reports after each group
+ */
+function setLoadingProgress(cid, done, total) {
+  if (!isListLoading || !loaderText.withStats || loaderText.cid !== cid) return;
+  loaderText.text = done >= total ? "Sorting…" : `Loading episodes… ${done} / ${total}`;
   updateListLoadingUi();
 }
 
@@ -268,8 +290,16 @@ function updateListLoadingUi() {
       height: ".84rem",
       maxHeight: "64px",
     });
-    loader.appendChild(img);
+    const text = document.createElement("div");
+    text.className = "cbs-load-text";
+    text.setAttribute("aria-live", "polite");
+    loader.append(img, text);
     trackList.appendChild(loader);
+  }
+  if (loader) {
+    const text = loader.querySelector(".cbs-load-text");
+    const value = isListLoading && loaderText.visible ? loaderText.text : "";
+    if (text && text.textContent !== value) text.textContent = value;
   }
   if (trackList.classList.contains("cbs-loading") !== isListLoading) {
     trackList.classList.toggle("cbs-loading", isListLoading);
@@ -375,9 +405,9 @@ async function selectSort(sortType, { fromKeyboard = false } = {}) {
   busyRequestId = requestId;
   setSelection(sortType);
   setStatus("");
-  setListLoading(true);
 
   const needsStats = STAT_SORTS.has(sortType);
+  setListLoading(true, { cid, withStats: needsStats });
 
   try {
     const data = await getChannelData(cid, needsStats);
@@ -445,6 +475,13 @@ document.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && ui && ui.root.classList.contains("is-open")) {
     setMenuOpen(false, { fromKeyboard: true });
+  }
+});
+
+// Progress from background.js while episode stats are loading
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "FETCH_PROGRESS") {
+    setLoadingProgress(String(message.cid), message.done, message.total);
   }
 });
 

@@ -3,7 +3,8 @@
 const API_BASE = "https://everest.castbox.fm/data";
 const REQUEST_TIMEOUT_MS = 15000;
 const CHUNK_SIZE = 20;
-const CHUNK_DELAY_MS = 200; // A short delay between chunks to respect the server
+const CONCURRENT_REQUESTS = 4; // Parallel chunk requests (browsers allow 6 per host)
+const CHUNK_DELAY_MS = 100; // Short pause per worker between requests, to respect the server
 
 /**
  * Fetches a URL and parses JSON, with a timeout and one retry.
@@ -40,32 +41,49 @@ async function get_episode_overview(cid) {
     .map((ep) => ({ eid: ep.eid, release_date: ep.release_date || null }));
 }
 
-async function get_episode_stats(eids_list) {
-  // API Step 2: Get likes / plays / comments in chunks
+async function get_episode_stats(eids_list, onProgress) {
+  // API Step 2: Get likes / plays / comments in chunks of 20,
+  // CONCURRENT_REQUESTS chunks at a time
+  const chunks = [];
+  for (let i = 0; i < eids_list.length; i += CHUNK_SIZE) {
+    chunks.push(eids_list.slice(i, i + CHUNK_SIZE));
+  }
+
   const stats = []; // [eid, likes, plays, comments]
   let failed_count = 0;
+  let done = 0;
+  let next = 0;
 
-  for (let i = 0; i < eids_list.length; i += CHUNK_SIZE) {
-    const chunk = eids_list.slice(i, i + CHUNK_SIZE);
-    const eids_string = chunk.map((eid) => encodeURIComponent(eid)).join(",");
-    const url = `${API_BASE}/episodes/v2?country=us&eids=${eids_string}&raw=1`;
+  async function worker() {
+    while (next < chunks.length) {
+      const chunk = chunks[next++];
+      const eids_string = chunk.map((eid) => encodeURIComponent(eid)).join(",");
+      const url = `${API_BASE}/episodes/v2?country=us&eids=${eids_string}&raw=1`;
 
-    try {
-      const data = await fetch_json(url);
-      if (!Array.isArray(data && data.data)) throw new Error("Unexpected response");
-      data.data.forEach((ep) => {
-        stats.push([ep.eid, ep.like_count || 0, ep.play_count || 0, ep.comment_count || 0]);
-      });
-      failed_count += Math.max(0, chunk.length - data.data.length);
-    } catch (error) {
-      console.error("Error in get_episode_stats (chunk):", error);
-      failed_count += chunk.length;
-    }
+      try {
+        const data = await fetch_json(url);
+        if (!Array.isArray(data && data.data)) throw new Error("Unexpected response");
+        data.data.forEach((ep) => {
+          stats.push([ep.eid, ep.like_count || 0, ep.play_count || 0, ep.comment_count || 0]);
+        });
+        failed_count += Math.max(0, chunk.length - data.data.length);
+      } catch (error) {
+        console.error("Error in get_episode_stats (chunk):", error);
+        failed_count += chunk.length;
+      }
 
-    if (i + CHUNK_SIZE < eids_list.length) {
-      await new Promise((resolve) => setTimeout(resolve, CHUNK_DELAY_MS));
+      done += chunk.length;
+      onProgress(done, eids_list.length);
+
+      if (next < chunks.length) {
+        await new Promise((resolve) => setTimeout(resolve, CHUNK_DELAY_MS));
+      }
     }
   }
+
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENT_REQUESTS, chunks.length) }, worker)
+  );
   return { stats, failed_count };
 }
 
@@ -73,6 +91,18 @@ async function get_episode_stats(eids_list) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type !== "GET_CHANNEL_DATA") return;
+
+  // Progress for the loader text ("Loading episodes… 120 / 385"), sent to the tab that asked
+  const reportProgress = (done, total) => {
+    if (!sender.tab) return;
+    chrome.tabs
+      .sendMessage(
+        sender.tab.id,
+        { type: "FETCH_PROGRESS", cid: request.cid, done, total },
+        { frameId: sender.frameId }
+      )
+      .catch(() => {}); // The tab may have been closed or navigated away
+  };
 
   (async () => {
     try {
@@ -83,7 +113,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
 
       const eids = overview.map((ep) => ep.eid);
-      const { stats, failed_count } = await get_episode_stats(eids);
+      const { stats, failed_count } = await get_episode_stats(eids, reportProgress);
       if (eids.length > 0 && stats.length === 0) {
         throw new Error("Could not fetch episode details");
       }
